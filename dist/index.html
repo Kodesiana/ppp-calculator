@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            name="description"
+            content="Kalkulator gaji/salary menggunakan metode Purchasing Power Parity (PPP) untuk kerja di luar negeri"
+        />
+        <title>Kalkulator Gaji - Purchasing Power Parity (PPP)</title>
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.3/css/bulma.min.css"
+            integrity="sha512-4EnjWdm80dyWrJ7rh/tlhNt6fJL52dSDSHNEqfdVmBLpJLPrRYnFa+Kn4ZZL+FRkDL5/7lAXuHylzJkpzkSM2A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.3.0/apexcharts.min.css"
+            integrity="sha512-P/8zp3yWsYKLYgykcnVdWono7iWa9VXcoNLFnUhC82oBjt/6z5BIHXTQsMKBgYJjp6K+JAkt4yrID1cxfoUq+g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+            integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link rel="stylesheet" href="assets/css/app.css" />
+    </head>
+
+    <body>
+        <div class="container is-max-desktop" x-data="pppapp">
+            <!-- Header -->
+            <section class="section">
+                <div class="columns">
+                    <div class="column">
+                        <h1 class="title">Kalkulator Gaji</h1>
+                        <p class="subtitle">
+                            Hitung perkiraan gaji kamu di negara asing
+                            menggunakan metode Purchasing Power Parity (PPP).
+                        </p>
+                    </div>
+
+                    <div class="column is-narrow">
+                        <button class="button" x-on:click="toggleDarkMode">
+                            <span class="icon">
+                                <i class="fa-solid fa-moon"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Salary Calculation -->
+            <section class="section">
+                <!-- Input Salary and Year -->
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Gaji Saat Ini</label>
+                            <div class="control">
+                                <input
+                                    class="input"
+                                    x-mask:dynamic="$money($input, '.', ' ', 0)"
+                                    x-model="salaryInput"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-one-third">
+                        <custom-select
+                            label="Tahun"
+                            items-key="selectionYears"
+                            value-key="year"
+                            model-modifier=".number"
+                        />
+                    </div>
+                </div>
+
+                <!-- Input Origin and Target Country -->
+                <div class="columns">
+                    <div class="column">
+                        <custom-select
+                            label="Negara Asal"
+                            items-key="selectionCountries"
+                            value-key="originCountry"
+                        />
+                    </div>
+                    <div class="column">
+                        <custom-select
+                            label="Negara Tujuan"
+                            items-key="selectionCountries"
+                            value-key="targetCountry"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results -->
+            <section class="section">
+                <div class="has-text-centered is-size-4">
+                    <div x-show="salary <= 0">
+                        <p>Masukkan gaji!</p>
+                    </div>
+                    <div x-show="salary > 0">
+                        <i
+                            class="fa-solid fa-money-bill-1-wave mb-5"
+                            style="font-size: 55pt"
+                        ></i>
+                        <p>Kamu perlu gaji sebesar</p>
+                        <span
+                            class="tag is-primary is-large my-5"
+                            x-text="computedSalary"
+                        ></span>
+                        <p>
+                            di
+                            <span x-text="ticks[targetCountry].country"></span>
+                            untuk mendapat standar hidup yang sama<br />seperti
+                            di
+                            <span x-text="ticks[originCountry].country"></span>
+                            dengan gaji <strong x-text="originSalary"></strong>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PPP Historical Chart and Source -->
+            <section class="section">
+                <div class="container">
+                    <div id="ppp-history-chart" style="width: 100%"></div>
+                    <p class="mt-2">
+                        Sumber:
+                        <a
+                            href="https://data.worldbank.org/indicator/PA.NUS.PPP"
+                            >The World Bank</a
+                        >
+                    </p>
+                    <p class="is-size-7">Data diperbarui tiap tahun.</p>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>
+                        <strong>Kalkulator Gaji</strong> built with ❤️ by
+                        <a href="https://www.kodesiana.com">Fahmi Noor Fiqri</a>
+                        <br />The <a href="">source code</a> is licensed
+                        <a href="https://opensource.org/license/apache-2-0"
+                            >Apache License 2.0</a
+                        >
+                    </p>
+                </div>
+            </footer>
+        </div>
+
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.3.0/apexcharts.min.js"
+            integrity="sha512-QgLS4OmTNBq9TujITTSh0jrZxZ55CFjs4wjK8NXsBoZb04UYl8wWQJNaS8jRiLq6/c60bEfOj3cPsxadHICNfw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs-mask/3.14.8/cdn.min.js"
+            integrity="sha512-Zl0As7x66s3JpvGwgsQ1B5AgtRTb+uZuaJekdKdWp2Ew0435jsAS1GvM1XZy8ERf8wPwBjZYR+ccvucphgme6A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script
+            defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.8/cdn.min.js"
+            integrity="sha512-S0FmGVNvhIGBTFW8xl2Sb9VjaTqStfWO1KHQjaxvTESAOe0RlL7jITJQVmA5V1bu88Y9VgDoW7jqsQCYVRLx1Q=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script src="assets/js/components.js"></script>
+        <script src="assets/js/app.js"></script>
+    </body>
+</html>
