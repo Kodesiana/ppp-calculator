@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="id">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -47,7 +47,7 @@
                     </div>
 
                     <div class="column is-narrow">
-                        <button class="button" x-on:click="toggleDarkMode">
+                        <button class="button" x-on:click="toggleDarkMode" aria-label="Toggle dark mode">
                             <span class="icon">
                                 <i class="fa-solid fa-moon"></i>
                             </span>
@@ -62,9 +62,10 @@
                 <div class="columns">
                     <div class="column">
                         <div class="field">
-                            <label class="label">Gaji Saat Ini</label>
+                            <label for="salaryInput" class="label">Gaji Saat Ini</label>
                             <div class="control">
                                 <input
+                                    id="salaryInput"
                                     class="input"
                                     x-mask:dynamic="$money($input, '.', ' ', 0)"
                                     x-model="salaryInput"

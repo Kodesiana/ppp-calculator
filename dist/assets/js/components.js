@@ -50,10 +50,10 @@ class SelectComponent extends HTMLElement {
 
         this.innerHTML = `
         <div class="field">
-            <label class="label">${this.label}</label>
+            <label for="${this.valueKey}" class="label">${this.label}</label>
             <div class="control">
                 <div class="select">
-                    <select x-model${this.modelModifier}="${this.valueKey}">
+                    <select id="${this.valueKey}" x-model${this.modelModifier}="${this.valueKey}">
                         <template x-for="item in ${this.itemsKey}" :key="item.value">
                             <option x-bind:value="item.value" x-bind:selected="item.value == ${this.valueKey}" x-text="item.label">
                             </option>
